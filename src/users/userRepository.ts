@@ -11,13 +11,18 @@ const SEED_USERS: User[] = [
 
 let users: User[] = [];
 
+// Старі записи могли зберегтися без trim, тому нормалізуємо обидва боки порівняння.
+const normalizeUsername = (username: string): string => username.trim().toLowerCase();
+
 export const userRepository = {
   findByEmail(email: string): User | undefined {
     return users.find((u) => u.email === email);
   },
 
+  // Пошук без урахування регістру та пробілів по краях.
   findByUsername(username: string): User | undefined {
-    return users.find((u) => u.username === username);
+    const needle = normalizeUsername(username);
+    return users.find((u) => normalizeUsername(u.username) === needle);
   },
 
   create(data: Omit<User, "id">): User {
